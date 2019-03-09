@@ -37,7 +37,6 @@ defmodule KingOrQueen.Player do
       message
       |> ShellIO.prompt()
       |> String.replace("\n", "")
-      |> IO.inspect()
 
     if result in @allowed_cards do
       result

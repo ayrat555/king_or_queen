@@ -23,7 +23,9 @@ defmodule KingOrQueen.MixProject do
   defp deps do
     [
       {:ex_crypto, "~> 0.10.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:plug_cowboy, "~> 2.0"},
+      {:jason, "~> 1.1"},
+      {:httpoison, "~> 1.5"}
     ]
   end
 end
