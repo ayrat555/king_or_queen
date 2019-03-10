@@ -1,6 +1,5 @@
 defmodule KingOrQueen.Game do
   alias KingOrQueen.Player
-  alias Mix.Shell.IO, as: ShellIO
 
   @request_params [timeout: 50_000, recv_timeout: 50_000]
 
@@ -23,21 +22,40 @@ defmodule KingOrQueen.Game do
             {:ok, public_key} = Jason.decode!(response.body)["public_key"] |> ExPublicKey.loads()
 
             if Player.check_guess(signature, public_key) do
-              ShellIO.info("You won")
+              IO.puts("You won")
             else
-              ShellIO.info("You lost")
+              IO.puts("You lost")
             end
 
-            if ShellIO.yes?("Play again?") do
+            if prompt_task("Play again? (y or n)") do
               start(alice_address)
             end
 
           _ ->
-            ShellIO.info("Alic is offline")
+            IO.puts("Alic is offline")
         end
 
       _ ->
-        ShellIO.info("Alic is offline")
+        IO.puts("Alic is offline")
+    end
+  end
+
+  defp prompt_task(message) do
+    task = Task.async(fn -> prompt(message) end)
+
+    Task.await(task, :infinity)
+  end
+
+  defp prompt(message) do
+    result =
+      "#{message}\n"
+      |> IO.gets()
+      |> String.replace("\n", "")
+
+    if result in ["y", "n"] do
+      result == "y"
+    else
+      prompt(message)
     end
   end
 end
