@@ -18,7 +18,7 @@ defmodule KingOrQueen.Network.RouterTest do
 
         signature = Jason.decode!(conn.resp_body)["signature"] |> Base.decode16!(case: :lower)
 
-        assert Player.public_key(signature)
+        assert Player.public_key(signature, "King")
       end)
     end
   end
@@ -28,10 +28,13 @@ defmodule KingOrQueen.Network.RouterTest do
       signature = Player.choose_card()
 
       capture_io([input: "King", capture_prompt: true], fn ->
-        Player.guess_card(signature)
+        {_, guess} = Player.guess_card(signature)
 
         conn =
-          conn(:get, "/receive_guess", %{signature: Base.encode16(signature, case: :lower)})
+          conn(:get, "/receive_guess", %{
+            signature: Base.encode16(signature, case: :lower),
+            guessed_card: guess
+          })
           |> Router.call(@opts)
 
         {:ok, public_key} = Jason.decode!(conn.resp_body)["public_key"] |> ExPublicKey.loads()

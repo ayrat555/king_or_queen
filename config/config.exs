@@ -10,7 +10,6 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :king_or_queen, key: :value
 #
 # and access this configuration in your application as:
 #

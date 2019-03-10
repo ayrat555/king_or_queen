@@ -1,6 +1,7 @@
 defmodule KingOrQueen.Network.Router do
   use Plug.Router
 
+  alias Plug.Conn
   alias KingOrQueen.Player
 
   plug(:match)
@@ -15,9 +16,11 @@ defmodule KingOrQueen.Network.Router do
   end
 
   get "/receive_guess" do
-    signature = conn.body_params["signature"] |> Base.decode16!(case: :lower)
+    conn = Conn.fetch_query_params(conn)
+    signature = conn.params["signature"] |> Base.decode16!(case: :lower)
+    guessed_card = conn.params["guessed_card"]
 
-    {:ok, public_key} = Player.public_key(signature) |> ExPublicKey.pem_encode()
+    {:ok, public_key} = Player.public_key(signature, guessed_card) |> ExPublicKey.pem_encode()
 
     json_result = Jason.encode!(%{public_key: public_key})
 

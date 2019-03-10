@@ -16,7 +16,7 @@ defmodule KingOrQueen.PlayerTest do
       end)
 
       # Alice returns public key
-      public_key = Player.public_key(card_signature)
+      public_key = Player.public_key(card_signature, "Queen")
 
       # Bob checks result
       refute Player.check_guess(card_signature, public_key)

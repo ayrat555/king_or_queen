@@ -1,5 +1,4 @@
 defmodule KingOrQueen.Player do
-  alias Mix.Shell.IO, as: ShellIO
   alias KingOrQueen.Crypto
 
   @allowed_cards ["King", "Queen"]
@@ -7,21 +6,27 @@ defmodule KingOrQueen.Player do
   @bob_table :bob_table
 
   def choose_card() do
-    choosed_card = prompt("Choose card (King or Queen):")
+    choosed_card = prompt_task("Choose card (King or Queen):")
 
     sign_card(choosed_card)
   end
 
   def guess_card(result_signature) do
-    guessed_card = prompt("Guess card (King or Queen):")
+    guessed_card = prompt_task("Guess card (King or Queen):")
 
     save_key_value_to_cache(@bob_table, result_signature, guessed_card)
 
     {result_signature, guessed_card}
   end
 
-  def public_key(result_signature) do
+  def public_key(result_signature, guessed_card) do
     {:ok, public_key} = fetch_value_from_cache(@alice_table, result_signature)
+
+    if Crypto.auth_message(guessed_card, result_signature, public_key) do
+      IO.puts("You lost\n")
+    else
+      IO.puts("You won\n")
+    end
 
     public_key
   end
@@ -32,10 +37,16 @@ defmodule KingOrQueen.Player do
     Crypto.auth_message(guess, result_signature, public_key)
   end
 
+  defp prompt_task(message) do
+    task = Task.async(fn -> prompt(message) end)
+
+    Task.await(task, :infinity)
+  end
+
   defp prompt(message) do
     result =
-      message
-      |> ShellIO.prompt()
+      "#{message}\n"
+      |> IO.gets()
       |> String.replace("\n", "")
 
     if result in @allowed_cards do
