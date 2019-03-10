@@ -1,21 +1,23 @@
 # KingOrQueen
 
-**TODO: Add description**
+Simple `King or Queen` game that can be played over the network
 
-## Installation
+## Project Structure
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `king_or_queen` to your list of dependencies in `mix.exs`:
+- `king_or_queen` - the library that implements the game
+- `king_or_queen_cli` - cli to the library
 
-```elixir
-def deps do
-  [
-    {:king_or_queen, "~> 0.1.0"}
-  ]
-end
-```
+## Idea
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/king_or_queen](https://hexdocs.pm/king_or_queen).
+- Bob sends to Alice request to choose King or Queen
+- Alice chooses King or Queen
+  - she generates private and public RSA keys
+  - she signs choosed card name
+  - she sends only signature to Bob
+- Bob guesses card and sends his guess to Alice
+- Alice returns public key
+- Bob now can check his guess using signature and public key
 
+## How to use
+
+- Usage is described in `king_or_queen_cli` project
